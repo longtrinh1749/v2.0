@@ -4,6 +4,7 @@ import { useState } from "react";
 import useToken from "../App/useToken";
 import useRole from "../hooks/useRole";
 import StudentClass from '../Student/Class';
+import TeacherClass from '../Teacher/Class';
 
 function callGetClasses(credentials) {
     // return fetch('http://localhost:8080/classes', {
@@ -14,29 +15,48 @@ function callGetClasses(credentials) {
     //     body: JSON.stringify(credentials)
     // })
     // .then(data => data.json())
-
-    return [
-        {
-            "name": "Math 3",
-            "teacher": "Nguyen Van A",
-            "school": "TH Truong Dinh"
-        },
-        {
-            "name": "Math 2",
-            "teacher": "Pham Thi B",
-            "school": "TH Thinh Liet"
-        },
-        {
-            "name": "Math 2B",
-            "teacher": "Trinh Thi C",
-            "school": "TH Truong Dinh"
-        },
-        {
-            "name": "Literature",
-            "teacher": "Nguyen Phuong D",
-            "school": "TH Thinh Liet"
-        }
-    ]
+    if (credentials.role == "ROLE.STUDENT") {
+        return [
+            {
+                "name": "Math 3",
+                "teacher": "Nguyen Van A",
+                "school": "TH Truong Dinh"
+            },
+            {
+                "name": "Math 2",
+                "teacher": "Nguyen Van A",
+                "school": "TH Thinh Liet"
+            },
+            {
+                "name": "Math 2B",
+                "teacher": "Nguyen Van A",
+                "school": "TH Truong Dinh"
+            },
+            {
+                "name": "Literature",
+                "teacher": "Nguyen Phuong D",
+                "school": "TH Thinh Liet"
+            }
+        ]
+    } else if (credentials.role == "ROLE.TEACHER") {
+        return [
+            {
+                "name": "Math 3",
+                "teacher": "Nguyen Van A",
+                "school": "TH Truong Dinh"
+            },
+            {
+                "name": "Math 2",
+                "teacher": "Nguyen Van A",
+                "school": "TH Thinh Liet"
+            },
+            {
+                "name": "Math 2B",
+                "teacher": "Nguyen Van A",
+                "school": "TH Truong Dinh"
+            },
+        ]
+    }
 }
 
 export default function Classes() {
@@ -55,7 +75,7 @@ export default function Classes() {
     //     else setClasses([])
     // })
 
-    const newClasses = callGetClasses();
+    const newClasses = callGetClasses({ role });
     console.log(newClasses);
 
 
@@ -65,7 +85,7 @@ export default function Classes() {
         )
     } else if (role == "ROLE.STUDENT") {
         const listStudentClasses = newClasses.map((studentClass, index) =>
-            <StudentClass index={index} studentClass={studentClass} />
+            <StudentClass key={index} index={index} studentClass={studentClass} />
         );
         return (
             <>
@@ -73,8 +93,13 @@ export default function Classes() {
             </>
         )
     } else if (role == "ROLE.TEACHER") {
+        const listTeacherClasses = newClasses.map((teacherClass, index) =>
+            <TeacherClass key={index} index={index} teacherClass={teacherClass} />
+        );
         return (
-            <h1>Teacher classes</h1>
+            <>
+                {listTeacherClasses}
+            </>
         )
     }
 }
