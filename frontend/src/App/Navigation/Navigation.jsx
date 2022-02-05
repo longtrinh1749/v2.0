@@ -1,47 +1,11 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import useRole from "../../hooks/useRole";
+import setRole from '../../hooks/useRole';
 
 function Navigation() {
-    return (
-        // <div className="navigation" >
-        //     <nav className="navbar navbar-expand navbar-dark bg-dark">
-        //         <div className="container">
-        //             <NavLink className="navbar-brand" to="/">
-        //                 Homewreck
-        //             </NavLink>
-        //             <div>
-        //                 <ul className="navbar-nav m1-auto">
-        //                     <li className="nav-item">
-        //                         <NavLink className="nav-link" to="/">
-        //                             Home
-        //                         </NavLink>
-        //                     </li>
-        //                     <li className="nav-item">
-        //                         <NavLink className="nav-link" to="/student">
-        //                             Student
-        //                         </NavLink>
-        //                     </li>
-        //                     <li className="nav-item">
-        //                         <NavLink className="nav-link" to="/teacher">
-        //                             Teacher
-        //                         </NavLink>
-        //                     </li>
-        //                     <li className="nav-item">
-        //                         <NavLink className="nav-link" to="/logout">
-        //                             Logout
-        //                         </NavLink>
-        //                     </li>
-        //                     <li className="nav-item">
-        //                         <NavLink className="nav-link" to="/logout">
-        //                             <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt="" /> </div>
-        //                         </NavLink>
-        //                     </li>
-        //                 </ul>
-        //             </div>
-        //         </div>
-        //     </nav>
-        // </div>
+    const { role, setRole } = useRole();
 
+    return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
             <div className="container-fluid">
                 <button className="btn btn-primary" id="sidebarToggle">Menu</button>
@@ -51,8 +15,8 @@ function Navigation() {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav ms-auto mt-2 mt-lg-0">
                         <li className="nav-item"><a className="nav-link" href="#!">Home</a></li>
-                        <li className="nav-item active"><a className="nav-link" href="/student">Student</a></li>
-                        <li className="nav-item"><a className="nav-link" href="/teacher">Teacher</a></li>
+                        <li className="nav-item active"><a className="nav-link" href="#" onClick={() => setRole("ROLE.STUDENT")}>Student</a></li>
+                        <li className="nav-item"><a className="nav-link" href="#" onClick={() => setRole("ROLE.TEACHER")}>Teacher</a></li>
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
                             <div className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -64,7 +28,7 @@ function Navigation() {
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav >
     )
 }
 

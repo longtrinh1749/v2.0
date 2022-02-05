@@ -12,7 +12,7 @@ async function loginUser(credentials) {
     //     body: JSON.stringify(credentials)
     // })
     //     .then(data => data.json())
-    return { "token": username }
+    return { "token": credentials.username }
 }
 
 export default function Login({ setToken }) {
