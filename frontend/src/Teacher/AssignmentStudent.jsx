@@ -20,6 +20,6 @@ export default function AssignmentStudent(props) {
                     <NavLink className="nav-link" to="/assignment" onClick={handleAssignmentClick}>View Submitted</NavLink>
                 }
             </div>
-        </div >
+        </div>
     )
 }

@@ -1,3 +1,18 @@
 .card {
-  width: 18rem;
+  width: 22rem;
+  display: inline-block;
+  margin: 10px;
+}
+
+#book {
+  display: inline-block;
+  margin-top: -111px;
+}
+
+.card-body {
+  display: inline-block;
+}
+
+#teacher-class {
+  width: 100px;
 }

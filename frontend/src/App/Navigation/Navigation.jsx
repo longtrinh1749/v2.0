@@ -18,7 +18,7 @@ function Navigation() {
                         <li className="nav-item active"><a className="nav-link" href="#" onClick={() => setRole("ROLE.STUDENT")}>Student</a></li>
                         <li className="nav-item"><a className="nav-link" href="#" onClick={() => setRole("ROLE.TEACHER")}>Teacher</a></li>
                         <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                            <a className="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
                             <div className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <a className="dropdown-item" href="#!">Profile</a>
                                 <div className="dropdown-divider"></div>

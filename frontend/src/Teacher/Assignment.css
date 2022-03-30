@@ -4,21 +4,11 @@
   margin: 10px;
 }
 
-#class {
+#book {
   display: inline-block;
   margin-top: -111px;
-  width: 67px;
 }
 
 .card-body {
   display: inline-block;
-}
-
-.card-title {
-  color: red;
-  font-weight: 550;
-}
-
-.nav-link {
-  padding: 0;
 }

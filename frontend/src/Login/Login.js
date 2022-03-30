@@ -29,21 +29,37 @@ export default function Login({ setToken }) {
     }
 
     return (
-        <div className="login-wrapper">
-            <h1>Please log in</h1>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    <p>Username</p>
-                    <input type="text" onChange={e => setUsername(e.target.value)} />
-                </label>
-                <label>
-                    <p>Password</p>
-                    <input type="password" onChange={e => setPassword(e.target.value)} />
-                </label>
-                <div>
-                    <button type="submit">Submit</button>
+        // <div className="login-wrapper">
+        //     <h1>Please log in</h1>
+        //     <form onSubmit={handleSubmit}>
+        //         <label>
+        //             <p>Username</p>
+        //             <input type="text" onChange={e => setUsername(e.target.value)} />
+        //         </label>
+        //         <label>
+        //             <p>Password</p>
+        //             <input type="password" onChange={e => setPassword(e.target.value)} />
+        //         </label>
+        //         <div>
+        //             <button type="submit">Submit</button>
+        //         </div>
+        //     </form>
+        // </div>
+        <div class="wrapper fadeInDown">
+            <div id="formContent">
+                <div class="fadeIn first">
+                    <img src="https://t4.ftcdn.net/jpg/01/90/50/61/360_F_190506160_coExNloNdTd1OcvJe3cbdddUDqoqiJ2B.jpg" id="icon" alt="User Icon" />
                 </div>
-            </form>
+                <form onSubmit={handleSubmit}>
+                    <input type="text" id="login" class="fadeIn second" name="login" placeholder="Username" onChange={e => setUsername(e.target.value)} />
+                    <input type="password" id="password" class="fadeIn third" name="login" placeholder="Password" onChange={e => setPassword(e.target.value)} />
+                    <input type="submit" class="fadeIn fourth" value="Log In" />
+                </form>
+                <div id="formFooter">
+                    <a class="underlineHover" href="#">Forgot Password?</a>
+                </div>
+
+            </div>
         </div>
     )
 }

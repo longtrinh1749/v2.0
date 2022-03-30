@@ -4542,6 +4542,8 @@ textarea.form-control-lg {
 }
 
 .card-title {
+    color: red;
+    font-weight: 550;
   margin-bottom: 0.5rem;
 }
 

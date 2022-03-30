@@ -15,7 +15,7 @@ export default function Sidebar() {
 
     return (
         <div className="border-end bg-white" id="sidebar-wrapper">
-            <div className="sidebar-heading border-bottom bg-light">Homewreck</div>
+            <div className="sidebar-heading border-bottom bg-light">Homewerck</div>
             <div className="list-group list-group-flush">
                 <a className="list-group-item list-group-item-action list-group-item-light p-3" href="/classes" onClick={classHandler}>Classes</a>
                 <a className="list-group-item list-group-item-action list-group-item-light p-3" href="/assignments" onClick={assignmentHandler}>Assignments</a>

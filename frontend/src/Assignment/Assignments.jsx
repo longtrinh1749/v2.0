@@ -5,6 +5,7 @@ import useToken from "../App/useToken";
 import useRole from "../hooks/useRole";
 import StudentAssignment from "../Student/Assignment";
 import TeacherAssignment from "../Teacher/Assignment";
+import './Assignments.css';
 
 function callGetAssignments(credentials) {
     // return fetch('http://localhost:8080/classes', {
@@ -78,7 +79,7 @@ function callGetAssignments(credentials) {
     }
 }
 
-export default function Assignments({ handleAssignment }) {
+export default function Assignments(props) {
     const { role, setRole } = useRole();
     const [assignments, setAssignments] = useState([]);
     const { token, setToken } = useToken();
@@ -108,21 +109,21 @@ export default function Assignments({ handleAssignment }) {
     } else if (role == "ROLE.STUDENT") {
         console.log("asd");
         const listStudentAssignments = newAssignments.map((assignment, index) =>
-            <StudentAssignment key={index} index={index} assignment={assignment} handleAssignment={handleAssignment} />
+            <StudentAssignment key={index} index={index} assignment={assignment} handleAssignment={props.handleAssignment} />
         );
         return (
             <>
-                <h1>Class: {newAssignments[0].class}</h1>
+                <h1 id="class-name">Class: {newAssignments[0].class}</h1>
                 {listStudentAssignments}
             </>
         )
     } else if (role == "ROLE.TEACHER") {
         const listTeacherAssignments = newAssignments.map((assignment, index) =>
-            <TeacherAssignment key={index} index={index} assignment={assignment} handleAssignment={handleAssignment} />
+            <TeacherAssignment key={index} index={index} assignment={assignment} handleAssignment={props.handleAssignment} />
         );
         return (
             <>
-                <h1>Class: {newAssignments[0].class}</h1>
+                <h1 id="class-name">Class: {newAssignments[0].class}</h1>
                 {listTeacherAssignments}
             </>
         )

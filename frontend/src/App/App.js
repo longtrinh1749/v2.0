@@ -24,10 +24,10 @@ function App() {
         return <Login setToken={setToken} />
     }
 
-    console.log("assignment id:" + assignment);
+    console.log(assignment);
 
     return (
-        <>
+        <div className='d-flex'>
             <Sidebar />
             <div id="page-content-wrapper">
                 <BrowserRouter>
@@ -43,7 +43,7 @@ function App() {
                     </Routes>
                 </BrowserRouter>
             </div>
-        </>
+        </div>
     );
 }
 

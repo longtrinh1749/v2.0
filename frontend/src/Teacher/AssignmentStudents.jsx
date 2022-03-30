@@ -41,8 +41,8 @@ export default function AssignmentDetail(props) {
         <AssignmentStudent key={index} index={index} student={student} assignment={props.assignment} handleAssignment={props.handleAssignment} />
     );
     return (
-        <>
+        <div id="students">
             {listStudents}
-        </>
+        </div>
     )
 }

@@ -21,12 +21,11 @@ export default function AssignmentDetail(props) {
     const assignment = callGetAssignmentSubmit();
     return (
         <>
-            <div className="container border p-3">
+            <div className="border p-3">
                 <span>
                     <h5 id="assignment-name">{props.assignment.detail}</h5>
                     <div id="due">Due 11 October 2021 10:15<br /></div>
-                    <div><b>Instructions</b><br /></div>
-                    <div className="detail"><em>{props.assignment.instruction}</em></div>
+                    <div><em className="detail">Instructions: {props.assignment.instruction}</em></div>
                 </span>
                 <form action="http://localhost:5000/students/1/assignments/1/submit" method="post"
                     encType="multipart/form-data">
@@ -38,7 +37,7 @@ export default function AssignmentDetail(props) {
                     <button type="submit" className="btn btn-primary">Submit</button>
                 </form>
             </div>
-            <div className="container border p-3">
+            <div className="border p-3">
                 <span>
                     <h5>Grade</h5>
                     <em>Status: </em><b id="status">{assignment.status}</b><br />
