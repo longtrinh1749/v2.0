@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import './Work.css';
+// import './canvasScripts'
 
 function callGetWork(credentials) {
     // return fetch('http://localhost:8080/classes', {
@@ -34,7 +35,17 @@ function drawingCanvas() {
 }
 
 export default function Work(props) {
+    // Canvas variable 
+    var canvas, ctx, flag = false,
+        prevX = 0,
+        currX = 0,
+        prevY = 0,
+        currY = 0,
+        dot_flag = false;
+    var x = "black",
+        y = 2;
 
+    // Symbol variable
     const work = callGetWork()
     const symbol = {
         WRONG: 'wrong',
@@ -67,19 +78,103 @@ export default function Work(props) {
         <img id={"work-img-" + index} index={index} src={submit} onClick={(e) => imageClicked(e, index)} style={{ width: '100%' }} />
     )
     var canvasInitiation = false;
+
     function initCanvas() {
-        if (canvasInitiation == false) {
+        if (canvasInitiation == false || true) {
             var _canvasList = work.works.map((submit, index) => {
 
                 var _img = document.getElementById('work-img-' + index)
                 var _width = _img.clientWidth
                 var _height = _img.clientHeight
                 return (
-                    <canvas id={"work-canvas-" + index} className="my-canvas" style={{border:"1px solid"}} width={_width} height={_height} />
+                    <canvas id={"work-canvas-" + index} className="my-canvas" style={{ border: "1px solid" }} width={_width} height={_height} />
                 )
             })
             setCanvasList(_canvasList)
             canvasInitiation = true
+
+            // TODO: truyen vao bien canvas id, init voi moi canvas
+            function init() {
+                canvas = document.getElementById('work-canvas-0');
+                ctx = canvas.getContext("2d");
+                var w = canvas.width;
+                var h = canvas.height;
+
+                canvas.addEventListener("mousemove", function (e) {
+                    findxy('move', e)
+                }, false);
+                canvas.addEventListener("mousedown", function (e) {
+                    findxy('down', e)
+                }, false);
+                canvas.addEventListener("mouseup", function (e) {
+                    findxy('up', e)
+                }, false);
+                canvas.addEventListener("mouseout", function (e) {
+                    findxy('out', e)
+                }, false);
+            }
+
+            function findxy(res, e) {
+                if (res == 'down') {
+                    var rect = canvas.getBoundingClientRect()
+                    console.log("rect ", rect.left, rect.top)
+                    prevX = currX;
+                    prevY = currY;
+                    // currX = e.clientX - canvas.offsetLeft;
+                    // currY = e.clientY - canvas.offsetTop;
+                    currX = e.clientX - rect.left;
+                    currY = e.clientY - rect.top;
+
+                    flag = true;
+                    dot_flag = true;
+                    if (dot_flag) {
+                        ctx.beginPath();
+                        ctx.fillStyle = x;
+                        ctx.fillRect(currX, currY, 2, 2);
+                        ctx.closePath();
+                        dot_flag = false;
+                    }
+                }
+                if (res == 'up' || res == "out") {
+                    flag = false;
+                    if (res == 'up') {
+                        console.log(prevX, prevY)
+                        console.log(currX, currY)
+                    }
+                }
+                if (res == 'move') {
+                    if (flag) {
+                        var rect = canvas.getBoundingClientRect()
+                        console.log("rect ", rect.left, rect.top)
+                        prevX = currX;
+                        prevY = currY;
+                        // currX = e.clientX - canvas.offsetLeft;
+                        // currY = e.clientY - canvas.offsetTop;
+                        currX = e.clientX - rect.left;
+                        currY = e.clientY - rect.top;
+                        draw();
+                    }
+                }
+            }
+
+            function draw() {
+                ctx.beginPath();
+                ctx.moveTo(prevX, prevY);
+                ctx.lineTo(currX, currY);
+                ctx.strokeStyle = x;
+                ctx.lineWidth = y;
+                ctx.stroke();
+                ctx.closePath();
+            }
+
+            init()
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(100, 100);
+            ctx.strokeStyle = x;
+            ctx.lineWidth = y;
+            ctx.stroke();
+            ctx.closePath();
         }
     }
     function imageClicked(e, i) {
@@ -201,14 +296,15 @@ export default function Work(props) {
                     <div className="img-layer layer" id="img-layer">
                         {listSubmitted}
                     </div>
+                    {// Sava va lay dc trang thai cua canvas roi apply trang thai do len canvas
+                        // TODO: scale dc canvas neu thay doi size man hinh 
+                        // TODO 2: scale dc ca symbol neu thay doi size man hinh
+                    }
                     <div className="drawing-layer layer" id="drawing-layer" style={{ height: 2301 }}
                         onClick={drawingCanvas}>
                         {canvasList}
                     </div>
 
-                    {/* 
-                        sinh canvas tu image
-                    */}
                     <div className="object-layer layer" id="object-layer"
                         // style={{ height: 2301 }}
                         onClick={objectLayerClicked}>
