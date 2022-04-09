@@ -15,8 +15,6 @@
 
 canvas {
   position: relative;
-  width: 480px;
-  height: 320px;
   z-index: 1;
 }
 

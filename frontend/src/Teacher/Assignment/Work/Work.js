@@ -48,6 +48,7 @@ export default function Work(props) {
 
     const [objects, setObjects] = useState(work.objects);
     const [objectSpans, setObjectSpans] = useState();
+    const [canvasList, setCanvasList] = useState([])
     // var objectSpans = objects.map((object, index) => 
     //     <span className="object-symbol-container" style={{left:object.left, top:object.top}}>
     //         <img className="object-symbol object" src="img/right1.png" />
@@ -63,8 +64,24 @@ export default function Work(props) {
     var gradingTool = tools.SYMBOL;
     console.log("asd" + props.assignment.id);
     const listSubmitted = work.works.map((submit, index) =>
-        <img id={"work-img-" + index} index={index} src={submit} onClick={(e) => imageClicked(e, index)} style={{width:'100%'}} />
+        <img id={"work-img-" + index} index={index} src={submit} onClick={(e) => imageClicked(e, index)} style={{ width: '100%' }} />
     )
+    var canvasInitiation = false;
+    function initCanvas() {
+        if (canvasInitiation == false) {
+            var _canvasList = work.works.map((submit, index) => {
+
+                var _img = document.getElementById('work-img-' + index)
+                var _width = _img.clientWidth
+                var _height = _img.clientHeight
+                return (
+                    <canvas id={"work-canvas-" + index} className="my-canvas" style={{border:"1px solid"}} width={_width} height={_height} />
+                )
+            })
+            setCanvasList(_canvasList)
+            canvasInitiation = true
+        }
+    }
     function imageClicked(e, i) {
         console.log("Image layer Clicked height" + i);
         var rect = e.target.getBoundingClientRect();
@@ -146,6 +163,7 @@ export default function Work(props) {
         gradingTool = tools.PEN
         console.log("Tool Pen Clicked" + gradingTool);
         document.getElementById('drawing-layer').style.zIndex = "5"
+        initCanvas()
     }
 
     function toolSymbolClicked() {
@@ -185,7 +203,7 @@ export default function Work(props) {
                     </div>
                     <div className="drawing-layer layer" id="drawing-layer" style={{ height: 2301 }}
                         onClick={drawingCanvas}>
-                        <canvas id="my-canvas" className="my-canvas" onClick={drawingCanvas} />
+                        {canvasList}
                     </div>
 
                     {/* 
