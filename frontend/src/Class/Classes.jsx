@@ -1,10 +1,10 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import useToken from "../App/useToken";
+import useToken from "../hooks/useToken";
 import useRole from "../hooks/useRole";
-import StudentClass from '../Student/Class';
-import TeacherClass from '../Teacher/Class';
+import StudentClass from '../Student/Class/Class';
+import TeacherClass from '../Teacher/Class/Class';
 
 function callGetClasses(credentials) {
     // return fetch('http://localhost:8080/classes', {

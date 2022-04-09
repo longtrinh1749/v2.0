@@ -1,5 +1,5 @@
 import React from "react";
-import './AssignmentDetail.css';
+import './Assignments.css';
 import AssignmentStudent from './AssignmentStudent';
 
 function callGetStudents(credentials) {

@@ -6,12 +6,12 @@ import Student from '../Student/Student'
 import Teacher from '../Teacher/Teacher'
 import Classes from '../Class/Classes';
 import Assignments from '../Assignment/Assignments';
-import StudentAssignmentDetail from '../Student/AssignmentDetail';
-import TeacherAssignmentStudents from '../Teacher/AssignmentStudents';
-import Work from '../Teacher/Work';
+import StudentAssignmentDetail from '../Student/Assignment/Detail/AssignmentDetail';
+import TeacherAssignmentStudents from '../Teacher/Assignment/Student/AssignmentStudents';
+import Work from '../Teacher/Assignment/Work/Work';
 import Navigation from './Navigation/Navigation';
 import Sidebar from './Sidebar/Sidebar';
-import useToken from './useToken';
+import useToken from '../hooks/useToken';
 
 function App() {
     const { token, setToken } = useToken();
@@ -35,7 +35,7 @@ function App() {
                     <Routes>
                         <Route path="/student" exact element={<Student />} />
                         <Route path="/teacher" exact element={<Teacher />} />
-                        <Route path="/classes" exact element={<Classes />} />
+                        <Route path="/courses/courses" exact element={<Classes />} />
                         <Route path="/assignments" exact element={<Assignments handleAssignment={handleAssignment} />} />
                         <Route path="/student-assignment" exact element={<StudentAssignmentDetail assignment={assignment} />} />
                         <Route path="/teacher-assignment" exact element={<TeacherAssignmentStudents assignment={assignment} handleAssignment={handleAssignment} />} />

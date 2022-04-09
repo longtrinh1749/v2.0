@@ -1,10 +1,10 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import useToken from "../App/useToken";
+import useToken from "../hooks/useToken";
 import useRole from "../hooks/useRole";
-import StudentAssignment from "../Student/Assignment";
-import TeacherAssignment from "../Teacher/Assignment";
+import StudentAssignment from "../Student/Assignment/Assignment";
+import TeacherAssignment from "../Teacher/Assignment/Assignment";
 import './Assignments.css';
 
 function callGetAssignments(credentials) {

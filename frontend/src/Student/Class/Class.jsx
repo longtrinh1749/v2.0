@@ -4,7 +4,7 @@ export default function Class(props) {
 
     return (
         <div className="card">
-            <img src="https://www.iconbunny.com/icons/media/catalog/product/2/1/2154.8-sitting-in-class-icon-iconbunny.jpg" id="class"></img>
+            <img src="https://www.iconbunny.com/icons/media/catalog/product/2/1/2154.8-sitting-in-class-icon-iconbunny.jpg" id="class-student"></img>
             <div className="card-body">
                 {/* <img src="https://cdn.jsdelivr.net/gh/azota889/storage_public/azota_assets/images/u416.svg"></img> */}
                 <h5 className="card-title">{props.studentClass.name}</h5>
