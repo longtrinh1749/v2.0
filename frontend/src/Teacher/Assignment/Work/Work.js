@@ -78,7 +78,7 @@ export default function Work(props) {
         console.log(objects)
         setObjectSpans(objects.map((object, index) => {
             var imgHeight = 0
-            for (let i = 0; i < index; i++) {
+            for (let i = 0; i < object.image; i++) {
                 imgHeight += document.getElementById('work-img-' + i).clientHeight
             }
             return (
