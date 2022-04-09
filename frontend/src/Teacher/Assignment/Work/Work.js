@@ -36,12 +36,12 @@ function drawingCanvas() {
 
 export default function Work(props) {
     // Canvas variable 
-    var canvas, ctx, flag = false,
-        prevX = 0,
-        currX = 0,
-        prevY = 0,
-        currY = 0,
-        dot_flag = false;
+    var canvases = [], ctxs = [], flags = [],
+        prevXs = [],
+        currXs = [],
+        prevYs = [],
+        currYs = [],
+        dot_flags = [];
     var x = "black",
         y = 2;
 
@@ -69,7 +69,9 @@ export default function Work(props) {
     const tools = {
         SYMBOL: "SYMBOL",
         PEN: "PEN",
-        COMMENT: "COMMENT"
+        COMMENT: "COMMENT",
+        ERASER: "ERASER",
+        ERASE_SIZE: 20
     }
 
     var gradingTool = tools.SYMBOL;
@@ -94,87 +96,108 @@ export default function Work(props) {
             canvasInitiation = true
 
             // TODO: truyen vao bien canvas id, init voi moi canvas
-            function init() {
-                canvas = document.getElementById('work-canvas-0');
-                ctx = canvas.getContext("2d");
-                var w = canvas.width;
-                var h = canvas.height;
+            function init(i) {
+                flags[i] = false
+                prevXs[i] = 0
+                prevYs[i] = 0
+                currXs[i] = 0
+                currYs[i] = 0
+                dot_flags[i] = false
+                console.log("init canvas", i)
+                canvases[i] = document.getElementById("work-canvas-" + i);
+                ctxs[i] = canvases[i].getContext("2d");
+                var w = canvases[i].width;
+                var h = canvases[i].height;
 
-                canvas.addEventListener("mousemove", function (e) {
-                    findxy('move', e)
+                canvases[i].addEventListener("mousemove", function (e) {
+                    findxy('move', e, i)
                 }, false);
-                canvas.addEventListener("mousedown", function (e) {
-                    findxy('down', e)
+                canvases[i].addEventListener("mousedown", function (e) {
+                    findxy('down', e, i)
                 }, false);
-                canvas.addEventListener("mouseup", function (e) {
-                    findxy('up', e)
+                canvases[i].addEventListener("mouseup", function (e) {
+                    findxy('up', e, i)
                 }, false);
-                canvas.addEventListener("mouseout", function (e) {
-                    findxy('out', e)
+                canvases[i].addEventListener("mouseout", function (e) {
+                    findxy('out', e, i)
                 }, false);
             }
 
-            function findxy(res, e) {
+            function findxy(res, e, i) {
                 if (res == 'down') {
-                    var rect = canvas.getBoundingClientRect()
+                    var rect = canvases[i].getBoundingClientRect()
                     console.log("rect ", rect.left, rect.top)
-                    prevX = currX;
-                    prevY = currY;
+                    prevXs[i] = currXs[i];
+                    prevYs[i] = currYs[i];
                     // currX = e.clientX - canvas.offsetLeft;
                     // currY = e.clientY - canvas.offsetTop;
-                    currX = e.clientX - rect.left;
-                    currY = e.clientY - rect.top;
+                    currXs[i] = e.clientX - rect.left;
+                    currYs[i] = e.clientY - rect.top;
 
-                    flag = true;
-                    dot_flag = true;
-                    if (dot_flag) {
-                        ctx.beginPath();
-                        ctx.fillStyle = x;
-                        ctx.fillRect(currX, currY, 2, 2);
-                        ctx.closePath();
-                        dot_flag = false;
+                    flags[i] = true;
+                    dot_flags[i] = true;
+                    if (dot_flags[i] && gradingTool == tools.PEN) {
+                        console.log("Drawing")
+                        ctxs[i].beginPath();
+                        ctxs[i].fillStyle = x;
+                        ctxs[i].fillRect(currXs[i], currYs[i], 2, 2);
+                        ctxs[i].closePath();
+                        dot_flags[i] = false;
                     }
                 }
                 if (res == 'up' || res == "out") {
-                    flag = false;
+                    flags[i] = false;
                     if (res == 'up') {
-                        console.log(prevX, prevY)
-                        console.log(currX, currY)
+                        console.log(prevXs[i], prevYs[i])
+                        console.log(currXs[i], currYs[i])
                     }
                 }
                 if (res == 'move') {
-                    if (flag) {
-                        var rect = canvas.getBoundingClientRect()
+                    if (flags[i]) {
+                        var rect = canvases[i].getBoundingClientRect()
                         console.log("rect ", rect.left, rect.top)
-                        prevX = currX;
-                        prevY = currY;
+                        prevXs[i] = currXs[i];
+                        prevYs[i] = currYs[i];
                         // currX = e.clientX - canvas.offsetLeft;
                         // currY = e.clientY - canvas.offsetTop;
-                        currX = e.clientX - rect.left;
-                        currY = e.clientY - rect.top;
-                        draw();
+                        currXs[i] = e.clientX - rect.left;
+                        currYs[i] = e.clientY - rect.top;
+                        if (gradingTool == tools.PEN) draw(i);
+                        else if (gradingTool == tools.ERASER) erase(i);
                     }
                 }
             }
 
-            function draw() {
-                ctx.beginPath();
-                ctx.moveTo(prevX, prevY);
-                ctx.lineTo(currX, currY);
-                ctx.strokeStyle = x;
-                ctx.lineWidth = y;
-                ctx.stroke();
-                ctx.closePath();
+            function draw(i) {
+                console.log(gradingTool)
+                console.log("Drawing")
+                ctxs[i].beginPath();
+                ctxs[i].moveTo(prevXs[i], prevYs[i]);
+                ctxs[i].lineTo(currXs[i], currYs[i]);
+                ctxs[i].strokeStyle = x;
+                ctxs[i].lineWidth = y;
+                ctxs[i].stroke();
+                ctxs[i].closePath();
             }
-
-            init()
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(100, 100);
-            ctx.strokeStyle = x;
-            ctx.lineWidth = y;
-            ctx.stroke();
-            ctx.closePath();
+            function erase(i) {
+                // tâm xóa sẽ ở trỏ chuột
+                ctxs[i].clearRect(
+                    currXs[i] - tools.ERASE_SIZE,
+                    currYs[i] - tools.ERASE_SIZE,
+                    2 * tools.ERASE_SIZE,
+                    2 * tools.ERASE_SIZE)
+                // ctxs[i].clearRect(currXs[i], currYs[i], 2, 2)
+            }
+            for (let i = 0; i < work.works.length; i++) {
+                init(i)
+                ctxs[i].beginPath();
+                ctxs[i].moveTo(0, 0);
+                ctxs[i].lineTo(100, 100);
+                ctxs[i].strokeStyle = x;
+                ctxs[i].lineWidth = y;
+                ctxs[i].stroke();
+                ctxs[i].closePath();
+            }
         }
     }
     function imageClicked(e, i) {
@@ -267,6 +290,13 @@ export default function Work(props) {
         document.getElementById('drawing-layer').style.zIndex = "3"
     }
 
+    function toolEraserClicked() {
+        gradingTool = tools.ERASER
+        console.log("Tool Eraser Clicked" + gradingTool);
+        document.getElementById('drawing-layer').style.zIndex = "5"
+        initCanvas()
+    }
+
     function objectLayerClicked(e) {
         console.log("Object layer Clicked");
         // var rect = e.target.getBoundingClientRect();
@@ -290,6 +320,7 @@ export default function Work(props) {
                         <button className="grading-tool" id="tool-pen" onClick={() => toolPenClicked()}>Pen</button>
                         <button className="grading-tool" id="tool-symbol" onClick={() => toolSymbolClicked()}>Symbol</button>
                         <button className="grading-tool" id="tool-comment" onClick={() => toolCommentClicked()}>Comment</button>
+                        <button className="grading-tool" id="tool-eraser" onClick={() => toolEraserClicked()}>Eraser</button>
                     </div>
                 </div>
                 <div className="col-7">
