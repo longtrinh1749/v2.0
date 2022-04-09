@@ -34,7 +34,7 @@ function drawingCanvas() {
 }
 
 export default function Work(props) {
-    
+
     const work = callGetWork()
     const symbol = {
         WRONG: 'wrong',
@@ -43,6 +43,7 @@ export default function Work(props) {
         RIGHT_IMG: "img/right1.png",
         WIDTH: 40,
         HEIGHT: 40,
+        COMMENT: 'comment',
     }
 
     const [objects, setObjects] = useState(work.objects);
@@ -136,18 +137,21 @@ export default function Work(props) {
         }))
     }
     function toolCommentClicked() {
-        console.log("Tool comment Clicked" + this.gradingTool);
-        this.gradingTool = this.tools.COMMENT
+        gradingTool = tools.COMMENT
+        console.log("Tool Comment Clicked" + gradingTool);
+        document.getElementById('drawing-layer').style.zIndex = "3"
     }
 
     function toolPenClicked() {
-        console.log("Tool Pen Clicked" + this.gradingTool);
-        return this.gradingTool = this.tools.PEN
+        gradingTool = tools.PEN
+        console.log("Tool Pen Clicked" + gradingTool);
+        document.getElementById('drawing-layer').style.zIndex = "5"
     }
 
     function toolSymbolClicked() {
-        console.log("Tool Symbol Clicked" + this.gradingTool);
-        this.gradingTool = this.tools.SYMBOL
+        gradingTool = tools.SYMBOL
+        console.log("Tool Symbol Clicked" + gradingTool);
+        document.getElementById('drawing-layer').style.zIndex = "3"
     }
 
     function objectLayerClicked(e) {
@@ -176,13 +180,13 @@ export default function Work(props) {
                     </div>
                 </div>
                 <div className="col-7">
-                    <div className="img-layer layer" id="img-layer" onClick={drawingCanvas}>
+                    <div className="img-layer layer" id="img-layer">
                         {listSubmitted}
                     </div>
-                    {/* <div className="drawing-layer layer" id="drawing-layer" style={{ height: 2301 }}
+                    <div className="drawing-layer layer" id="drawing-layer" style={{ height: 2301 }}
                         onClick={drawingCanvas}>
-                        <canvas id="my-canvas" className="my-canvas" />
-                    </div> */}
+                        <canvas id="my-canvas" className="my-canvas" onClick={drawingCanvas} />
+                    </div>
 
                     {/* 
                         sinh canvas tu image

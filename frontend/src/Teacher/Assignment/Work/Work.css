@@ -26,12 +26,12 @@ canvas {
 
 #img-layer {
   position: absolute;
-  z-index: 0;
+  z-index: 4;
 }
 
 #object-layer {
   position: absolute;
-  z-index: 2;
+  z-index: 10;
 }
 
 #drawing-layer {
