@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import './Work.css';
 // import './canvasScripts'
-import {fabric} from 'fabric'
+
+import { fabric } from 'fabric'
 
 function callGetWork(credentials) {
     // return fetch('http://localhost:8080/classes', {
@@ -37,7 +38,8 @@ function drawingCanvas() {
 
 export default function Work(props) {
     // Canvas variable 
-    var canvases = [], ctxs = [], flags = [],
+    var canvasJson = useRef([])
+    var canvases = useRef([]), ctxs = [], flags = [],
         prevXs = [],
         currXs = [],
         prevYs = [],
@@ -58,6 +60,8 @@ export default function Work(props) {
         COMMENT: 'comment',
     }
 
+
+    const [canvasState, setCanvasState] = useState([])
     const [objects, setObjects] = useState(work.objects);
     const [objectSpans, setObjectSpans] = useState();
     const [canvasList, setCanvasList] = useState([])
@@ -75,15 +79,18 @@ export default function Work(props) {
         ERASE_SIZE: 20
     }
 
-    var gradingTool = tools.SYMBOL;
+    // let gradingTool = tools.SYMBOL; 
+    let gradingTool = useRef(tools.SYMBOL)
+    let canvasInitiation = useRef(false);
+
     console.log("asd" + props.assignment.id);
     const listSubmitted = work.works.map((submit, index) =>
         <img id={"work-img-" + index} index={index} src={submit} onClick={(e) => imageClicked(e, index)} style={{ width: '100%' }} />
     )
-    var canvasInitiation = false;
 
     function initCanvas() {
-        if (canvasInitiation == false || true) {
+        if (canvasInitiation.current == false || true) {
+            console.log("Initating canvas", canvasInitiation.current)
             var _canvasList = work.works.map((submit, index) => {
 
                 var _img = document.getElementById('work-img-' + index)
@@ -94,113 +101,33 @@ export default function Work(props) {
                 )
             })
             setCanvasList(_canvasList)
-            canvasInitiation = true
 
             // TODO: truyen vao bien canvas id, init voi moi canvas
             function init(i) {
-                flags[i] = false
-                prevXs[i] = 0
-                prevYs[i] = 0
-                currXs[i] = 0
-                currYs[i] = 0
-                dot_flags[i] = false
-                console.log("init canvas", i)
-                canvases[i] = document.getElementById("work-canvas-" + i);
-                ctxs[i] = canvases[i].getContext("2d");
-                var w = canvases[i].width;
-                var h = canvases[i].height;
+                fabric.Object.prototype.objectCaching = true;
 
-                canvases[i].addEventListener("mousemove", function (e) {
-                    findxy('move', e, i)
-                }, false);
-                canvases[i].addEventListener("mousedown", function (e) {
-                    findxy('down', e, i)
-                }, false);
-                canvases[i].addEventListener("mouseup", function (e) {
-                    findxy('up', e, i)
-                }, false);
-                canvases[i].addEventListener("mouseout", function (e) {
-                    findxy('out', e, i)
-                }, false);
+                var canvasId = "work-canvas-" + i
+                canvases.current[i] = new fabric.Canvas(canvasId, {
+                    isDrawingMode: true,
+                    freeDrawingBrush: new fabric.PencilBrush({ decimate: 8 })
+                });
+                console.log(canvases.current[i])
+                canvasInitiation.current = true
             }
 
-            function findxy(res, e, i) {
-                if (res == 'down') {
-                    var rect = canvases[i].getBoundingClientRect()
-                    console.log("rect ", rect.left, rect.top)
-                    prevXs[i] = currXs[i];
-                    prevYs[i] = currYs[i];
-                    // currX = e.clientX - canvas.offsetLeft;
-                    // currY = e.clientY - canvas.offsetTop;
-                    currXs[i] = e.clientX - rect.left;
-                    currYs[i] = e.clientY - rect.top;
-
-                    flags[i] = true;
-                    dot_flags[i] = true;
-                    if (dot_flags[i] && gradingTool == tools.PEN) {
-                        console.log("Drawing")
-                        ctxs[i].beginPath();
-                        ctxs[i].fillStyle = x;
-                        ctxs[i].fillRect(currXs[i], currYs[i], 2, 2);
-                        ctxs[i].closePath();
-                        dot_flags[i] = false;
-                    }
-                }
-                if (res == 'up' || res == "out") {
-                    flags[i] = false;
-                    if (res == 'up') {
-                        console.log(prevXs[i], prevYs[i])
-                        console.log(currXs[i], currYs[i])
-                    }
-                }
-                if (res == 'move') {
-                    if (flags[i]) {
-                        var rect = canvases[i].getBoundingClientRect()
-                        console.log("rect ", rect.left, rect.top)
-                        prevXs[i] = currXs[i];
-                        prevYs[i] = currYs[i];
-                        // currX = e.clientX - canvas.offsetLeft;
-                        // currY = e.clientY - canvas.offsetTop;
-                        currXs[i] = e.clientX - rect.left;
-                        currYs[i] = e.clientY - rect.top;
-                        if (gradingTool == tools.PEN) draw(i);
-                        else if (gradingTool == tools.ERASER) erase(i);
-                    }
-                }
-            }
-
-            function draw(i) {
-                console.log(gradingTool)
-                console.log("Drawing")
-                ctxs[i].beginPath();
-                ctxs[i].moveTo(prevXs[i], prevYs[i]);
-                ctxs[i].lineTo(currXs[i], currYs[i]);
-                ctxs[i].strokeStyle = x;
-                ctxs[i].lineWidth = y;
-                ctxs[i].stroke();
-                ctxs[i].closePath();
-            }
-            function erase(i) {
-                // tâm xóa sẽ ở trỏ chuột
-                ctxs[i].clearRect(
-                    currXs[i] - tools.ERASE_SIZE,
-                    currYs[i] - tools.ERASE_SIZE,
-                    2 * tools.ERASE_SIZE,
-                    2 * tools.ERASE_SIZE)
-                // ctxs[i].clearRect(currXs[i], currYs[i], 2, 2)
-            }
             for (let i = 0; i < work.works.length; i++) {
                 init(i)
-                ctxs[i].beginPath();
-                ctxs[i].moveTo(0, 0);
-                ctxs[i].lineTo(100, 100);
-                ctxs[i].strokeStyle = x;
-                ctxs[i].lineWidth = y;
-                ctxs[i].stroke();
-                ctxs[i].closePath();
+                // ctxs[i].beginPath();
+                // ctxs[i].moveTo(0, 0);
+                // ctxs[i].lineTo(100, 100);
+                // ctxs[i].strokeStyle = x;
+                // ctxs[i].lineWidth = y;
+                // ctxs[i].stroke();
+                // ctxs[i].closePath();
             }
         }
     }
+
     function imageClicked(e, i) {
         console.log("Image layer Clicked height" + i);
         var rect = e.target.getBoundingClientRect();
@@ -273,34 +200,53 @@ export default function Work(props) {
         }))
     }
     function toolCommentClicked() {
-        gradingTool = tools.COMMENT
-        console.log("Tool Comment Clicked" + gradingTool);
-        document.getElementById('drawing-layer').style.zIndex = "3"
+        gradingTool.current = tools.COMMENT
+        console.log("Tool Comment Clicked" + gradingTool.current);
+        document.getElementById('drawing-layer').style.zIndex = "5"
     }
 
     function toolPenClicked() {
-        gradingTool = tools.PEN
-        console.log("Tool Pen Clicked" + gradingTool);
+        gradingTool.current = tools.PEN;
+        console.log("Tool Pen Clicked" + gradingTool.current);
         document.getElementById('drawing-layer').style.zIndex = "5"
         initCanvas()
+        // var canvasId = "work-canvas-" + i
+        // canvases.current[i] = new fabric.Canvas(canvasId, {
+        //     isDrawingMode: true,
+        //     freeDrawingBrush: new fabric.PencilBrush({ decimate: 8 })
+        // });
+        for (let i = 0; i < work.works.length; i++) {
+            canvases.current[i].freeDrawingBrush = new fabric.PencilBrush(canvases.current[i]);
+            canvases.current[i].freeDrawingBrush.width = 2;
+            canvases.current[i].isDrawingMode = true;
+        }
     }
 
     function toolSymbolClicked() {
-        gradingTool = tools.SYMBOL
-        console.log("Tool Symbol Clicked" + gradingTool);
+        gradingTool.current = tools.SYMBOL
+        console.log("Tool Symbol Clicked" + gradingTool.current);
         document.getElementById('drawing-layer').style.zIndex = "3"
     }
 
     function toolEraserClicked() {
-        gradingTool = tools.ERASER
+        gradingTool.current = tools.ERASER
         console.log("Tool Eraser Clicked" + gradingTool);
         document.getElementById('drawing-layer').style.zIndex = "5"
-        initCanvas()
+        // initCanvas() // Thu xoa di xem sao
+        // var canvasId = "work-canvas-" + i
+        // canvases.current[i] = new fabric.Canvas(canvasId, {
+        //     isDrawingMode: true,
+        //     freeDrawingBrush: new fabric.PencilBrush({ decimate: 8 })
+        // });
+        for (let i = 0; i < work.works.length; i++) {
+            canvases.current[i].freeDrawingBrush = new fabric.EraserBrush(canvases.current[i]);
+            canvases.current[i].freeDrawingBrush.width = 2;
+            canvases.current[i].isDrawingMode = true;
+        }
     }
 
     function toolSaveClicked() {
-        var saveCanvas = new fabric.Canvas('work-canvas-0')
-        console.log(JSON.stringify(saveCanvas.toJSON()))
+        // var saveCanvas = new fabric.Canvas('work-canvas-0')
         // create a rectangle object
         // var rect = new fabric.Rect({
         //   left: 100,
@@ -309,12 +255,45 @@ export default function Work(props) {
         //   width: 20,
         //   height: 20
         // });
-        
+
         // // "add" rectangle onto canvas
         // saveCanvas.add(rect);
+
+        console.log("Tool Save Clicked");
+
+        // use ref
+        for (let i = 0; i < work.works.length; i++) {
+            canvasJson.current[i] = JSON.stringify(canvases.current[i].toJSON())
+            console.log(JSON.stringify(canvases.current[i].toJSON()))
+        }
+
+        // use state
+        // for (let i = 0; i < work.works.length; i++) {
+        //     canvasState[i] = JSON.stringify(canvases.current[i].toJSON())
+        //     setCanvasState(canvasState)
+        // } 
     }
 
     function toolLoadClicked() {
+        console.log("Tool Load Clicked");
+
+        // use ref
+        for (let i = 0; i < work.works.length; i++) {
+            canvases.current[i].loadFromJSON(canvasJson.current[i], function () {
+                canvases.current[i].renderAll();
+            }, function (o, object) {
+                console.log(o, object)
+            })
+        }
+
+        // use state
+        // for (let i = 0; i < work.works.length; i++) {
+        //     canvases.current[i].loadFromJSON(canvasJson, function() {
+        //         canvases.current[0].renderAll(); 
+        //     },function(o,object){
+        //         console.log(o,object)
+        //     })
+        // }
     }
 
     function objectLayerClicked(e) {
