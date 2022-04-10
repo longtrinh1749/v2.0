@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import './Work.css';
 // import './canvasScripts'
+import {fabric} from 'fabric'
 
 function callGetWork(credentials) {
     // return fetch('http://localhost:8080/classes', {
@@ -297,6 +298,25 @@ export default function Work(props) {
         initCanvas()
     }
 
+    function toolSaveClicked() {
+        var saveCanvas = new fabric.Canvas('work-canvas-0')
+        console.log(JSON.stringify(saveCanvas.toJSON()))
+        // create a rectangle object
+        // var rect = new fabric.Rect({
+        //   left: 100,
+        //   top: 100,
+        //   fill: 'red',
+        //   width: 20,
+        //   height: 20
+        // });
+        
+        // // "add" rectangle onto canvas
+        // saveCanvas.add(rect);
+    }
+
+    function toolLoadClicked() {
+    }
+
     function objectLayerClicked(e) {
         console.log("Object layer Clicked");
         // var rect = e.target.getBoundingClientRect();
@@ -321,6 +341,8 @@ export default function Work(props) {
                         <button className="grading-tool" id="tool-symbol" onClick={() => toolSymbolClicked()}>Symbol</button>
                         <button className="grading-tool" id="tool-comment" onClick={() => toolCommentClicked()}>Comment</button>
                         <button className="grading-tool" id="tool-eraser" onClick={() => toolEraserClicked()}>Eraser</button>
+                        <button className="grading-tool" id="tool-eraser" onClick={() => toolSaveClicked()}>Save</button>
+                        <button className="grading-tool" id="tool-eraser" onClick={() => toolLoadClicked()}>Load</button>
                     </div>
                 </div>
                 <div className="col-7">
