@@ -39,6 +39,7 @@ function drawingCanvas() {
 export default function Work(props) {
     // Canvas variable 
     var canvasJson = useRef([])
+    var commentValue = useRef('')
     var canvases = useRef([]), ctxs = [], flags = [],
         prevXs = [],
         currXs = [],
@@ -65,6 +66,9 @@ export default function Work(props) {
     const [objects, setObjects] = useState(work.objects);
     const [objectSpans, setObjectSpans] = useState();
     const [canvasList, setCanvasList] = useState([])
+    const [commentState, setCommentState] = useState(false)
+    // const [commentValue, setCommentValue] = useState('')
+    const [commentInputSpan, setCommentInputSpan] = useState()
     // var objectSpans = objects.map((object, index) => 
     //     <span className="object-symbol-container" style={{left:object.left, top:object.top}}>
     //         <img className="object-symbol object" src="img/right1.png" />
@@ -129,32 +133,67 @@ export default function Work(props) {
     }
 
     function imageClicked(e, i) {
-        console.log("Image layer Clicked height" + i);
-        var rect = e.target.getBoundingClientRect();
-        console.log("rect: " + rect.top + " " + rect.left)
-        var x = e.clientX - rect.left; //x position within the element.
-        var y = e.clientY - rect.top;  //y position within the element.
-        console.log("Left? : " + x + " ; Top? : " + y + ".");
-        objects.push({ left: x - 30, top: y - 30, image: i, type: symbol.RIGHT })
-        setObjects(objects)
-        console.log(objects)
-        setObjectSpans(objects.map((object, index) => {
+        if (gradingTool.current == tools.SYMBOL) {
+            console.log("Image layer Clicked height" + i);
+            var rect = e.target.getBoundingClientRect();
+            console.log("rect: " + rect.top + " " + rect.left)
+            var x = e.clientX - rect.left; //x position within the element.
+            var y = e.clientY - rect.top;  //y position within the element.
+            console.log("Left? : " + x + " ; Top? : " + y + ".");
+            objects.push({ left: x - 30, top: y - 30, image: i, type: symbol.RIGHT })
+            setObjects(objects)
+            console.log(objects)
+            setObjectSpans(objects.map((object, index) => {
+                var imgHeight = 0
+                for (let i = 0; i < object.image; i++) {
+                    imgHeight += document.getElementById('work-img-' + i).clientHeight
+                }
+                let _src = ""
+                if (object.type == symbol.RIGHT) {
+                    _src = symbol.RIGHT_IMG
+                } else if (object.type == symbol.WRONG) {
+                    _src = symbol.WRONG_IMG
+                } else if (object.type == symbol.COMMENT) {
+                    return (
+                        <span className="object-comment-container" onClick={(e) => objectClicked(e, object.left, object.top)} style={{ left: object.left, top: (object.top + imgHeight), color: "red", fontWeight: "bold" }}>
+                            {object.value}
+                        </span>
+                    )
+                }
+                return (
+                    <span className="object-symbol-container" onClick={(e) => objectClicked(e)} style={{ left: object.left, top: (object.top + imgHeight) }}>
+                        <img className="object-symbol object" src={_src} />
+                    </span>
+                )
+            }))
+        } else if (gradingTool.current == tools.COMMENT) {
+            console.log("Image layer Clicked height" + i);
             var imgHeight = 0
-            for (let i = 0; i < object.image; i++) {
-                imgHeight += document.getElementById('work-img-' + i).clientHeight
+            for (let j = 0; j < i; j++) {
+                imgHeight += document.getElementById('work-img-' + j).clientHeight
             }
-            let _src = ""
-            if (object.type == symbol.RIGHT) {
-                _src = symbol.RIGHT_IMG
-            } else if (object.type == symbol.WRONG) {
-                _src = symbol.WRONG_IMG
+            var rect = e.target.getBoundingClientRect();
+            console.log("rect: " + rect.top + " " + rect.left)
+            var x = e.clientX - rect.left; //x position within the element.
+            var y = e.clientY - rect.top;  //y position within the element.
+            x -= 10
+            y -= 10
+            console.log("Left? : " + x + " ; Top? : " + y + ".");
+            console.log(commentState)
+            setCommentState(!commentState)
+            if (commentState) {
+                setCommentInputSpan(
+                    <span className="object-comment-container" style={{ left: x, top: (y + imgHeight), color: "red", fontWeight: "bold" }}>
+                        <form x={x} y={y} onSubmit={(e) => handleSubmit(e, x, y, i)}>
+                            <input type="text" style={{ backgroundColor: "rgba(0,0,0,0.2)", color: "red", fontWeight: "bold", textAlign: "initial", padding: "unset" }}
+                                onChange={(e) => handleCommentChange(e)}></input>
+                        </form>
+                    </span>
+                )
+            } else {
+                setCommentInputSpan(<></>)
             }
-            return (
-                <span className="object-symbol-container" onClick={(e) => objectClicked(e)} style={{ left: object.left, top: (object.top + imgHeight) }}>
-                    <img className="object-symbol object" src={_src} />
-                </span>
-            )
-        }))
+        }
     }
 
     function objectClicked(e, l, t) {
@@ -170,7 +209,7 @@ export default function Work(props) {
                 if (objects[i].type == symbol.RIGHT) {
                     objects[i].type = symbol.WRONG
                     break
-                } else if (objects[i].type == symbol.WRONG) {
+                } else if (objects[i].type == symbol.WRONG || objects[i].type == symbol.COMMENT) {
                     objectIndexToRemove = i
                     break
                 }
@@ -189,20 +228,31 @@ export default function Work(props) {
             let _src = ""
             if (object.type == symbol.RIGHT) {
                 _src = symbol.RIGHT_IMG
+                return (
+                    <span className="object-symbol-container" onClick={(e) => objectClicked(e, object.left, object.top)} style={{ left: object.left, top: (object.top + imgHeight) }}>
+                        <img className="object-symbol object" src={_src} />
+                    </span>
+                )
             } else if (object.type == symbol.WRONG) {
                 _src = symbol.WRONG_IMG
+                return (
+                    <span className="object-symbol-container" onClick={(e) => objectClicked(e, object.left, object.top)} style={{ left: object.left, top: (object.top + imgHeight) }}>
+                        <img className="object-symbol object" src={_src} />
+                    </span>
+                )
+            } else if (object.type == symbol.COMMENT) {
+                return (
+                    <span className="object-comment-container" onClick={(e) => objectClicked(e, object.left, object.top)} style={{ left: object.left, top: (object.top + imgHeight), color: "red", fontWeight: "bold" }}>
+                        {object.value}
+                    </span>
+                )
             }
-            return (
-                <span className="object-symbol-container" onClick={(e) => objectClicked(e, object.left, object.top)} style={{ left: object.left, top: (object.top + imgHeight) }}>
-                    <img className="object-symbol object" src={_src} />
-                </span>
-            )
         }))
     }
     function toolCommentClicked() {
         gradingTool.current = tools.COMMENT
         console.log("Tool Comment Clicked" + gradingTool.current);
-        document.getElementById('drawing-layer').style.zIndex = "5"
+        document.getElementById('drawing-layer').style.zIndex = "3"
     }
 
     function toolPenClicked() {
@@ -296,6 +346,53 @@ export default function Work(props) {
         // }
     }
 
+    function sendToServerClicked() {
+        console.log("Send to Server later")
+    }
+
+    function handleSubmit(e, x, y, i) {
+        console.log("submit value:", commentValue.current, x, y)
+        e.preventDefault()
+        setCommentState(!commentState)
+        setCommentInputSpan(<></>)
+        objects.push({ left: x + 2, top: y + 7, image: i, type: symbol.COMMENT, value: commentValue.current })
+        setObjects(objects)
+        console.log(objects)
+        setObjectSpans(objects.map((object, index) => {
+            var imgHeight = 0
+            for (let i = 0; i < object.image; i++) {
+                imgHeight += document.getElementById('work-img-' + i).clientHeight
+            }
+            let _src = ""
+            if (object.type == symbol.RIGHT) {
+                _src = symbol.RIGHT_IMG
+                return (
+                    <span className="object-symbol-container" onClick={(e) => objectClicked(e)} style={{ left: object.left, top: (object.top + imgHeight) }}>
+                        <img className="object-symbol object" src={_src} />
+                    </span>
+                )
+            } else if (object.type == symbol.WRONG) {
+                _src = symbol.WRONG_IMG
+                return (
+                    <span className="object-symbol-container" onClick={(e) => objectClicked(e)} style={{ left: object.left, top: (object.top + imgHeight) }}>
+                        <img className="object-symbol object" src={_src} />
+                    </span>
+                )
+            } else if (object.type == symbol.COMMENT) {
+                return (
+                    <span className="object-comment-container" onClick={(e) => objectClicked(e, object.left, object.top)} style={{ left: object.left, top: (object.top + imgHeight), color: "red", fontWeight: "bold" }}>
+                        {object.value}
+                    </span>
+                )
+            }
+        }))
+    }
+    function handleCommentChange(e) {
+        console.log('comment value:', e.target.value)
+        // setCommentValue(e.target.value)
+        commentValue.current = e.target.value
+        console.log('comment state:', commentValue.current)
+    }
     function objectLayerClicked(e) {
         console.log("Object layer Clicked");
         // var rect = e.target.getBoundingClientRect();
@@ -320,8 +417,9 @@ export default function Work(props) {
                         <button className="grading-tool" id="tool-symbol" onClick={() => toolSymbolClicked()}>Symbol</button>
                         <button className="grading-tool" id="tool-comment" onClick={() => toolCommentClicked()}>Comment</button>
                         <button className="grading-tool" id="tool-eraser" onClick={() => toolEraserClicked()}>Eraser</button>
-                        <button className="grading-tool" id="tool-eraser" onClick={() => toolSaveClicked()}>Save</button>
-                        <button className="grading-tool" id="tool-eraser" onClick={() => toolLoadClicked()}>Load</button>
+                        <button className="grading-tool" id="tool-save" onClick={() => toolSaveClicked()}>Save</button>
+                        <button className="grading-tool" id="tool-load" onClick={() => toolLoadClicked()}>Load</button>
+                        <button className="grading-tool" id="tool-send-to-server" onClick={() => sendToServerClicked()}>Send to Server</button>
                     </div>
                 </div>
                 <div className="col-7">
@@ -345,10 +443,19 @@ export default function Work(props) {
                         </span> */}
                         {objectSpans}
                         {/* <ObjectGradingLayer /> */}
+                        <div>
+                            {commentInputSpan}
+                            {/* <span className="object-comment-container" style={{ left: 200, top: 200, color: "red", fontWeight: "bold" }}>
+                                <form onSubmit={(e) => handleSubmit(e)}>
+                                    <input type="text" style={{ backgroundColor: "rgba(0,0,0,0.2)", color: "red", fontWeight: "bold" }}
+                                        value={commentValue} onChange={(e) => handleCommentChange(e)}></input>
+                                </form>
+                            </span> */}
+                        </div>
                     </div>
                 </div>
                 <div className="col" id="grading-comment-section">
-                    Comment Section
+                    Asking Section
                 </div>
             </div>
         </div>

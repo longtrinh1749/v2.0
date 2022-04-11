@@ -75,3 +75,8 @@ canvas {
     position: absolute;
     z-index: -1;
 }
+
+.object-comment-container {
+    position: absolute;
+    z-index: -1;
+}
