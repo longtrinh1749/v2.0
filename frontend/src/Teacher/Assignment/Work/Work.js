@@ -61,13 +61,14 @@ export default function Work(props) {
     var commentValue = useRef('')
     var canvases = useRef([])
 
+    let commentState = useRef(false)
     let gradingTool = useRef(tools.SYMBOL)
     let canvasInitiation = useRef(false);
 
     const [objects, setObjects] = useState(work.objects);
     const [objectSpans, setObjectSpans] = useState();
     const [canvasList, setCanvasList] = useState([])
-    const [commentState, setCommentState] = useState(false)
+    // const [commentState, setCommentState] = useState(false)
     const [commentInputSpan, setCommentInputSpan] = useState()
 
     console.log("asdqwe" + props.assignment.id);
@@ -172,10 +173,11 @@ export default function Work(props) {
             x -= 10
             y -= 10
             console.log("Left? : " + x + " ; Top? : " + y + ".");
-            console.log("commentState", commentState)
-            setCommentState(!commentState) // state re render lai 1 lan => an lan dau tien se ko the hien ra input comment, co le la vay?
-            console.log("commentState", commentState)
-            if (commentState) {
+            console.log("commentState", commentState.current)
+            // setCommentState(!commentState) // state re render lai 1 lan => an lan dau tien se ko the hien ra input comment, co le la vay?
+            commentState.current = !commentState.current
+            console.log("commentState", commentState.current)
+            if (commentState.current) {
                 setCommentInputSpan(
                     <span className="object-comment-container" style={{ left: x, top: (y + imgHeight), color: "red", fontWeight: "bold" }}>
                         <form x={x} y={y} onSubmit={(e) => handleSubmit(e, x, y, i)}>
@@ -353,7 +355,8 @@ export default function Work(props) {
     function handleSubmit(e, x, y, i) {
         console.log("submit value:", commentValue.current, x, y)
         e.preventDefault()
-        setCommentState(!commentState)
+        // setCommentState(!commentState)
+        commentState.current = !commentState.current
         setCommentInputSpan(<></>)
         objects.push({ left: x + 2, top: y + 7, image: i, type: symbol.COMMENT, value: commentValue.current })
         setObjects(objects)
