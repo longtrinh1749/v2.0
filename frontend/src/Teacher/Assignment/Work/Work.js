@@ -37,18 +37,6 @@ function drawingCanvas() {
 }
 
 export default function Work(props) {
-    // Canvas variable 
-    var canvasJson = useRef([])
-    var commentValue = useRef('')
-    var canvases = useRef([]), ctxs = [], flags = [],
-        prevXs = [],
-        currXs = [],
-        prevYs = [],
-        currYs = [],
-        dot_flags = [];
-    var x = "black",
-        y = 2;
-
     // Symbol variable
     const work = callGetWork()
     const symbol = {
@@ -61,20 +49,6 @@ export default function Work(props) {
         COMMENT: 'comment',
     }
 
-
-    const [canvasState, setCanvasState] = useState([])
-    const [objects, setObjects] = useState(work.objects);
-    const [objectSpans, setObjectSpans] = useState();
-    const [canvasList, setCanvasList] = useState([])
-    const [commentState, setCommentState] = useState(false)
-    // const [commentValue, setCommentValue] = useState('')
-    const [commentInputSpan, setCommentInputSpan] = useState()
-    // var objectSpans = objects.map((object, index) => 
-    //     <span className="object-symbol-container" style={{left:object.left, top:object.top}}>
-    //         <img className="object-symbol object" src="img/right1.png" />
-    //     </span>
-    //     )
-
     const tools = {
         SYMBOL: "SYMBOL",
         PEN: "PEN",
@@ -82,12 +56,21 @@ export default function Work(props) {
         ERASER: "ERASER",
         ERASE_SIZE: 20
     }
+    // Canvas variable 
+    var canvasJson = useRef([])
+    var commentValue = useRef('')
+    var canvases = useRef([])
 
-    // let gradingTool = tools.SYMBOL; 
     let gradingTool = useRef(tools.SYMBOL)
     let canvasInitiation = useRef(false);
 
-    console.log("asd" + props.assignment.id);
+    const [objects, setObjects] = useState(work.objects);
+    const [objectSpans, setObjectSpans] = useState();
+    const [canvasList, setCanvasList] = useState([])
+    const [commentState, setCommentState] = useState(false)
+    const [commentInputSpan, setCommentInputSpan] = useState()
+
+    console.log("asdqwe" + props.assignment.id);
     const listSubmitted = work.works.map((submit, index) =>
         <img id={"work-img-" + index} index={index} src={submit} onClick={(e) => imageClicked(e, index)} style={{ width: '100%' }} />
     )
@@ -116,6 +99,16 @@ export default function Work(props) {
                     freeDrawingBrush: new fabric.PencilBrush({ decimate: 8 })
                 });
                 console.log(canvases.current[i])
+                canvases.current[i].on('mouse:down', function (options) {
+                    if (gradingTool.current == tools.COMMENT || gradingTool.current == tools.SYMBOL) {
+                        console.log(gradingTool.current)
+                        console.log("Canvas clicking down", options.e.clientX, options.e.clientY)
+                        imageClicked(options.e, i)
+                    } else {
+                        console.log(gradingTool.current)
+                        console.log("Canvas drawing down", options.e.clientX, options.e.clientY)
+                    }
+                })
                 canvasInitiation.current = true
             }
 
@@ -134,7 +127,7 @@ export default function Work(props) {
 
     function imageClicked(e, i) {
         if (gradingTool.current == tools.SYMBOL) {
-            console.log("Image layer Clicked height" + i);
+            console.log("Image layer Clicked SYMBOL height" + i);
             var rect = e.target.getBoundingClientRect();
             console.log("rect: " + rect.top + " " + rect.left)
             var x = e.clientX - rect.left; //x position within the element.
@@ -167,7 +160,7 @@ export default function Work(props) {
                 )
             }))
         } else if (gradingTool.current == tools.COMMENT) {
-            console.log("Image layer Clicked height" + i);
+            console.log("Image layer Clicked COMMENT height" + i);
             var imgHeight = 0
             for (let j = 0; j < i; j++) {
                 imgHeight += document.getElementById('work-img-' + j).clientHeight
@@ -179,8 +172,9 @@ export default function Work(props) {
             x -= 10
             y -= 10
             console.log("Left? : " + x + " ; Top? : " + y + ".");
-            console.log(commentState)
-            setCommentState(!commentState)
+            console.log("commentState", commentState)
+            setCommentState(!commentState) // state re render lai 1 lan => an lan dau tien se ko the hien ra input comment, co le la vay?
+            console.log("commentState", commentState)
             if (commentState) {
                 setCommentInputSpan(
                     <span className="object-comment-container" style={{ left: x, top: (y + imgHeight), color: "red", fontWeight: "bold" }}>
@@ -252,7 +246,7 @@ export default function Work(props) {
     function toolCommentClicked() {
         gradingTool.current = tools.COMMENT
         console.log("Tool Comment Clicked" + gradingTool.current);
-        document.getElementById('drawing-layer').style.zIndex = "3"
+        document.getElementById('drawing-layer').style.zIndex = "5"
     }
 
     function toolPenClicked() {
@@ -275,7 +269,7 @@ export default function Work(props) {
     function toolSymbolClicked() {
         gradingTool.current = tools.SYMBOL
         console.log("Tool Symbol Clicked" + gradingTool.current);
-        document.getElementById('drawing-layer').style.zIndex = "3"
+        document.getElementById('drawing-layer').style.zIndex = "5"
     }
 
     function toolEraserClicked() {
@@ -419,7 +413,7 @@ export default function Work(props) {
             <div className="row">
                 <div className="col sticky" id="grading-tool-section">
                     <div class="sticky">
-                        <button className="grading-tool" id="tool-pen" onClick={() => toolPenClicked()}>Pen</button>
+                        <button className="grading-tool" id="tool-pen" onClick={() => toolPenClicked()}>Pen</button> {/** an lan dau tien ms render ra html canvas => an them lan nua ms init fabric canvas */}
                         <button className="grading-tool" id="tool-symbol" onClick={() => toolSymbolClicked()}>Symbol</button>
                         <button className="grading-tool" id="tool-comment" onClick={() => toolCommentClicked()}>Comment</button>
                         <button className="grading-tool" id="tool-eraser" onClick={() => toolEraserClicked()}>Eraser</button>
