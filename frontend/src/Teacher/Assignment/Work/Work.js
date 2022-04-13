@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import './Work.css';
 // import './canvasScripts'
 
@@ -64,6 +64,7 @@ export default function Work(props) {
     let commentState = useRef(false)
     let gradingTool = useRef(tools.SYMBOL)
     let canvasInitiation = useRef(false);
+    let canvasHtmlInit = useRef(false)
 
     const [objects, setObjects] = useState(work.objects);
     const [objectSpans, setObjectSpans] = useState();
@@ -71,24 +72,35 @@ export default function Work(props) {
     // const [commentState, setCommentState] = useState(false)
     const [commentInputSpan, setCommentInputSpan] = useState()
 
+    useEffect(() => {
+        console.log("Document rendered")
+        for (let i = 0; i < work.works.length; i++) {
+            let _img = document.getElementById('work-img-' + i)
+            console.log("Image width", _img.clientWidth, "height", _img.clientHeight)
+        }
+    })
+
     console.log("asdqwe" + props.assignment.id);
     const listSubmitted = work.works.map((submit, index) =>
         <img id={"work-img-" + index} index={index} src={submit} onClick={(e) => imageClicked(e, index)} style={{ width: '100%' }} />
     )
 
     function initCanvas() {
-        if (canvasInitiation.current == false || true) {
+        if (canvasInitiation.current == false) {
             console.log("Initating canvas", canvasInitiation.current)
-            var _canvasList = work.works.map((submit, index) => {
+            if (canvasHtmlInit.current == false) {
+                canvasHtmlInit.current = true
+                var _canvasList = work.works.map((submit, index) => {
 
-                var _img = document.getElementById('work-img-' + index)
-                var _width = _img.clientWidth
-                var _height = _img.clientHeight
-                return (
-                    <canvas id={"work-canvas-" + index} className="my-canvas" style={{ border: "1px solid" }} width={_width} height={_height} />
-                )
-            })
-            setCanvasList(_canvasList)
+                    var _img = document.getElementById('work-img-' + index)
+                    var _width = _img.clientWidth
+                    var _height = _img.clientHeight
+                    return (
+                        <canvas id={"work-canvas-" + index} className="my-canvas" style={{ border: "1px solid" }} width={_width} height={_height} />
+                    )
+                })
+                setCanvasList(_canvasList)
+            }
 
             // TODO: truyen vao bien canvas id, init voi moi canvas
             function init(i) {
@@ -110,7 +122,7 @@ export default function Work(props) {
                         console.log("Canvas drawing down", options.e.clientX, options.e.clientY)
                     }
                 })
-                canvasInitiation.current = true
+                if (document.getElementById('work-canvas-0') !== null) canvasInitiation.current = true
             }
 
             for (let i = 0; i < work.works.length; i++) {
